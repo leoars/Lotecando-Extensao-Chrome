@@ -76,8 +76,10 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 - **Aba oculta** (24/10/2026): o Chrome atrasa os `setTimeout` de abas ocultas (1 s, e bem pior depois de 5 min); com
   esperas por `setTimeout`, 12 volantes levaram ~200 s com a aba da Caixa atrás de outra. Por isso `conteudo.js` espera
   por `MutationObserver` e `MessageChannel` (sem pausas fixas); `setTimeout` só como limite de segurança. Resultado com
-  a aba oculta: 20 volantes em ~8 s, 50 em ~26 s, 100 em ~88 s. Arquivos grandes são comuns (Leonardo), então não
-  reintroduzir esperas por tempo fixo.
+  a aba oculta: 20 volantes em ~8 s, 50 em ~26 s, 100 em ~88 s e o `Exemplo.vol` inteiro (334 volantes, 830 apostas,
+  R$ 1.660) em ~645 s, com o contador do site em 334 e carrinho esvaziado depois. O tempo cresce mais que o linear
+  (o site fica mais lento com o carrinho cheio). Arquivos grandes são comuns (Leonardo), então não reintroduzir
+  esperas por tempo fixo.
 - **Cada volante é confirmado pelo contador do carrinho do site** (`#carrinho`, 1 por volante): o preenchimento só
   segue quando o contador sobe; se não subir em 8 s, para com erro na linha. Motivo: num teste de 100 o contador mostrou
   99 e o critério anterior (volante limpo) não pegava item perdido; depois da mudança, 100 de 100 e 50 de 50.

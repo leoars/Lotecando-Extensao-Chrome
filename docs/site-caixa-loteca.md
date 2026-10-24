@@ -30,9 +30,24 @@ Volante `14112116444124` (1ª linha de `exemplos/Exemplo.vol`, 1 duplo = 2 apost
 - Valor: `.valor-aposta` mostra o valor do volante atual (R$ 2,00 por aposta simples). Os R$ 4,00 vistos antes com 1 e 3
   marcas em volante incompleto ainda não têm explicação; para volante completo o valor bate com `ContaApostas × 2`.
 
+## Recusas do site (testado em 24/10/2026)
+
+- Contador de volantes no carrinho: `#carrinho` (`a.data-jogo-menu-carrinho`), 1 por volante, texto numérico no cabeçalho.
+  Sobe quando a aposta entra de verdade; a extensão usa isso para confirmar cada volante.
+- Volante **sem nenhum duplo** (14 palpites simples, ou só triplos): o site recusa ao clicar em "Colocar no Carrinho"
+  com o modal `#alert` (`.modal.fade.in`): "É preciso palpitar em todos os jogos, e no mínimo um deles deve ser duplo,
+  para colocar sua aposta no carrinho." Botão de fechar: `.data-fechar-modal-alerta` (`data-dismiss="modal"`). O volante
+  continua marcado depois do aviso; é preciso fechar o modal e clicar em `#limparvolante`.
+- Em uma ocasião, um volante todo simples não gerou modal nem entrou no carrinho (o volante só ficou marcado); não
+  reproduzido depois, mas a extensão trata os dois casos (com e sem aviso) como "recusado pelo site".
+- Para combinação que o site não aceita (ex.: 14 triplos), `.valor-aposta` mostra o mínimo `R$ 4,00` em vez do valor
+  calculado. A extensão compara o valor do site com `apostas × preço por aposta` (R$ 2,00, aprendido do primeiro volante
+  aceito) e não envia ao carrinho se divergir.
+- Preço: R$ 2,00 por aposta (duplo = 2 apostas = R$ 4,00, mínimo de uma aposta válida).
+
 ## Pontos a verificar ainda
 
-- Mensagens de erro do site (volante incompleto, limite de duplos/triplos): não testado; existem modais `.msg-confirm`
-  ("Sim/Não") e `.msg-ul` ("Confirmar/Cancelar", "Entendi") no DOM.
+- Limites exatos de duplos e triplos além de "pelo menos um duplo" (só 14 triplos e 14 simples foram testados).
+- Outros modais do DOM (`.msg-confirm` "Sim/Não", `.msg-ul` "Confirmar/Cancelar", "Entendi") não foram vistos em uso.
 - Regras da Loteca (mínimo de jogos marcados, máximo de duplos/triplos) para validar o `.vol` antes de enviar.
 - Contador do carrinho e limite diário (R$ 9.300,00 exibido na página).

@@ -18,9 +18,11 @@
     carrinho: '#colocarnocarrinho',
     valor: '.valor-aposta',
     modais: '.modal',
+    fecharModal: '.data-fechar-modal-alerta', // botão "Fechar" do aviso do site
     contadorDoCarrinho: '#carrinho', // número de volantes no carrinho, no cabeçalho do site
   };
   const TOTAL_DE_PALPITES = 42; // 14 jogos x 3 colunas
+  const LIMITE_DE_RECUSAS_SEGUIDAS = 5;
 
   const estado = {
     rodando: false,
@@ -32,6 +34,7 @@
     concluido: false,
     centavosPorAposta: null,
     itensAntes: null, // itens que já estavam no carrinho ao começar
+    recusados: [], // [{numero, mensagem}] volantes que o site não aceitou
   };
 
   // O Chrome atrasa os setTimeout de abas ocultas (1 s, e bem mais depois de 5 min). Por isso as esperas aqui são
@@ -87,10 +90,32 @@
     return [...document.querySelectorAll(SELETORES.modais)].find((m) => getComputedStyle(m).display !== 'none');
   }
 
+  // Mensagem do site ("× Loteria Online <texto> Fechar" -> "<texto>").
+  function textoDoModal(modal) {
+    return modal.innerText
+      .replace(/\s+/g, ' ')
+      .replace(/^[×x]\s*/i, '')
+      .replace(/^Loterias? Online\s*/i, '')
+      .replace(/\s*Fechar$/i, '')
+      .trim();
+  }
+
+  async function fechaModal(modal) {
+    modal.querySelector(SELETORES.fecharModal)?.click();
+    if (!(await esperaAte(() => !modalAberto(), 4000))) {
+      throw new Error('Não consegui fechar o aviso do site.');
+    }
+  }
+
+  // Volante que o site não aceita; não impede os outros.
+  class RecusadoPeloSite extends Error {}
+
   function itensNoCarrinho() {
     const numero = parseInt(document.querySelector(SELETORES.contadorDoCarrinho)?.innerText, 10);
     return Number.isNaN(numero) ? null : numero;
   }
+
+  const emReais = (centavos) => `R$ ${(centavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
   // "Valor da Aposta: R$ 4,00" -> 400
   function valorEmCentavos() {
@@ -122,24 +147,21 @@
       throw new Error(`O volante no site ficou diferente do arquivo (${obtidas} marcas em vez de ${volante.marcas.length}).`);
     }
 
-    // Confere o valor mostrado pelo site: o primeiro volante define o preço por aposta; os demais têm de bater.
+    // Confere o valor mostrado pelo site. O preço por aposta só é aprendido de um volante que o site aceitou de fato
+    // (mais abaixo); até lá, quem valida é o próprio site. Depois, o valor tem de bater com o esperado.
     if (estado.centavosPorAposta !== null) {
       await esperaAte(() => valorEmCentavos() === estado.centavosPorAposta * volante.apostas, 3000);
     } else {
       for (let i = 0; i < 5; i++) await cede(); // deixa o site atualizar o valor
     }
     const centavos = valorEmCentavos();
-    if (centavos !== null) {
-      if (estado.centavosPorAposta === null && centavos % volante.apostas === 0) {
-        estado.centavosPorAposta = centavos / volante.apostas;
-      }
-      if (estado.centavosPorAposta !== null && centavos !== estado.centavosPorAposta * volante.apostas) {
-        await limpaVolante();
-        throw new Error(
-          `O valor mostrado pelo site (${centavos / 100} reais) não bate com ${volante.apostas} aposta(s) a ` +
-          `${estado.centavosPorAposta / 100} reais cada.`
-        );
-      }
+    if (centavos !== null && estado.centavosPorAposta !== null && centavos !== estado.centavosPorAposta * volante.apostas) {
+      await limpaVolante();
+      // Não vai ao carrinho: o volante do site não corresponde ao do arquivo (ex.: combinação que o site não aceita).
+      throw new RecusadoPeloSite(
+        `o valor no site (${emReais(centavos)}) não bate com o esperado (${emReais(estado.centavosPorAposta * volante.apostas)}, ` +
+        `${volante.apostas} aposta(s)); o site não aceita essa combinação de duplos e triplos`
+      );
     }
 
     document.querySelector(SELETORES.carrinho)?.click();
@@ -148,10 +170,16 @@
     const resolvido = await esperaAte(() => indicesMarcados().length === 0 || modalAberto(), 8000);
     const modal = modalAberto();
     if (modal) {
-      throw new Error(`O site mostrou uma mensagem: "${modal.innerText.replace(/\s+/g, ' ').trim().slice(0, 200)}"`);
+      // O site recusou este volante (ex.: sem nenhum duplo). Fecha o aviso, limpa e deixa o laço seguir para o próximo.
+      const mensagem = textoDoModal(modal);
+      await fechaModal(modal);
+      await limpaVolante();
+      throw new RecusadoPeloSite(mensagem);
     }
     if (!resolvido) {
-      throw new Error('O site não colocou a aposta no carrinho (o volante continuou marcado).');
+      // Sem aviso e sem entrar no carrinho (acontece com volante sem nenhum duplo): limpa e segue para o próximo.
+      await limpaVolante();
+      throw new RecusadoPeloSite('o site não aceitou o volante e não deu nenhuma mensagem');
     }
 
     // O volante só conta como feito quando o contador do carrinho do site sobe.
@@ -163,6 +191,11 @@
           `e eram esperados ${esperado}.`
         );
       }
+    }
+
+    // Volante aceito: aprende o preço por aposta para conferir os próximos.
+    if (estado.centavosPorAposta === null && centavos !== null && centavos % volante.apostas === 0) {
+      estado.centavosPorAposta = centavos / volante.apostas;
     }
   }
 
@@ -177,14 +210,26 @@
       erro: null,
       concluido: false,
       itensAntes: itensNoCarrinho(),
+      recusados: [],
+      centavosPorAposta: null,
     });
 
+    let recusasSeguidas = 0;
     try {
       for (const volante of volantes) {
         if (estado.cancelar) break;
         estado.atual = volante.numero;
-        await preencheVolante(volante);
-        estado.feitos++;
+        try {
+          await preencheVolante(volante);
+          estado.feitos++;
+          recusasSeguidas = 0;
+        } catch (erro) {
+          if (!(erro instanceof RecusadoPeloSite)) throw erro;
+          estado.recusados.push({ numero: volante.numero, mensagem: erro.message });
+          if (++recusasSeguidas >= LIMITE_DE_RECUSAS_SEGUIDAS) {
+            throw new Error(`O site recusou ${recusasSeguidas} volantes seguidos; parei para você conferir a página e o arquivo.`);
+          }
+        }
         estado.atual = null;
         await cede();
       }

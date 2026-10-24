@@ -12,6 +12,9 @@ const $ = (id) => document.getElementById(id);
 let volantes = [];
 let consulta = null;
 
+// Volante com 14 palpites simples: o site da Caixa não o aceita (exige ao menos um duplo).
+const semDuploOuTriplo = (volante) => volante.apostas === 1;
+
 // tipo: 'ok' (aviso bom), 'erro' (aviso ruim) ou '' (aviso neutro); texto vazio esconde a tarja.
 function mostraMensagem(texto, tipo = '') {
   const mensagem = $('mensagem');
@@ -84,9 +87,11 @@ $('arquivo').addEventListener('change', async (evento) => {
     return;
   }
 
+  const semDuplo = volantes.filter(semDuploOuTriplo).length;
   $('resumoTexto').textContent =
     `${volantes.length} volante(s), ${totalDeApostas(volantes)} aposta(s) no total ` +
-    `(primeira linha: ${volantes[0].linha}).`;
+    `(primeira linha: ${volantes[0].linha}).` +
+    (semDuplo > 0 ? ` Ignorados por não ter nenhum duplo (a Loteca da Caixa exige pelo menos um): ${semDuplo}.` : '');
   $('inicio').value = '1';
   $('resumo').hidden = false;
 });
@@ -105,7 +110,11 @@ $('botaoIniciar').addEventListener('click', async () => {
   }
 
   const inicio = Math.min(Math.max(parseInt($('inicio').value, 10) || 1, 1), volantes.length);
-  const fila = volantes.slice(inicio - 1);
+  const fila = volantes.slice(inicio - 1).filter((volante) => !semDuploOuTriplo(volante));
+  if (fila.length === 0) {
+    mostraMensagem('Não há volantes para preencher a partir daí (os sem duplo são ignorados).', 'erro');
+    return;
+  }
 
   try {
     await injeta(aba);
@@ -144,6 +153,21 @@ async function lerEstado(aba) {
   return resultado?.result ?? null;
 }
 
+// " O site recusou 3 volante(s): linhas 4, 9 e 12 ("mensagem")." — agrupa pela mensagem do site; vazio se não houve.
+function descreveRecusados(recusados = []) {
+  if (recusados.length === 0) return '';
+
+  const porMensagem = new Map();
+  for (const { numero, mensagem } of recusados) {
+    porMensagem.set(mensagem, [...(porMensagem.get(mensagem) ?? []), numero]);
+  }
+  const grupos = [...porMensagem].map(([mensagem, linhas]) => {
+    const mostradas = linhas.slice(0, 8).join(', ') + (linhas.length > 8 ? `… (+${linhas.length - 8})` : '');
+    return `linha(s) ${mostradas}: "${mensagem}"`;
+  });
+  return ` O site recusou ${recusados.length} volante(s) — ${grupos.join('; ')}.`;
+}
+
 function acompanha(aba) {
   clearInterval(consulta);
   $('resumo').hidden = true;
@@ -160,8 +184,10 @@ function acompanha(aba) {
     if (!estado) return;
 
     $('barra').max = Math.max(estado.total, 1);
-    $('barra').value = estado.feitos;
+    const recusadosAteAgora = estado.recusados?.length ?? 0;
+    $('barra').value = estado.feitos + recusadosAteAgora;
     $('andamentoTexto').textContent = `${estado.feitos} de ${estado.total} volante(s) no carrinho` +
+      (recusadosAteAgora > 0 ? `, ${recusadosAteAgora} recusado(s) pelo site` : '') +
       (estado.rodando && estado.atual ? ` — preenchendo a linha ${estado.atual} do arquivo` : '');
 
     if (estado.rodando) return;
@@ -169,16 +195,23 @@ function acompanha(aba) {
     $('andamento').hidden = true;
     $('resumo').hidden = volantes.length === 0;
 
+    const recusados = descreveRecusados(estado.recusados);
     if (estado.erro) {
       mostraMensagem(
         `Parei na linha ${estado.erro.numero} do arquivo: ${estado.erro.mensagem} ` +
-        `${estado.feitos} volante(s) já estão no carrinho. Confira o carrinho no site.`,
+        `${estado.feitos} volante(s) já estão no carrinho.${recusados} Confira o carrinho no site.`,
+        'erro'
+      );
+    } else if (estado.concluido && recusados) {
+      mostraMensagem(
+        `Terminei, mas nem tudo entrou: ${estado.feitos} volante(s) no carrinho.${recusados} ` +
+        'Confira o carrinho no site antes de pagar.',
         'erro'
       );
     } else if (estado.concluido) {
       mostraMensagem(`Pronto: ${estado.feitos} volante(s) no carrinho. Confira tudo no site antes de pagar.`, 'ok');
     } else {
-      mostraMensagem(`Cancelado. ${estado.feitos} volante(s) já estão no carrinho. Confira o carrinho no site.`);
+      mostraMensagem(`Cancelado. ${estado.feitos} volante(s) já estão no carrinho.${recusados} Confira o carrinho no site.`);
     }
   };
 

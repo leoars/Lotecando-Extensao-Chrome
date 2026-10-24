@@ -83,6 +83,12 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 - **Cada volante é confirmado pelo contador do carrinho do site** (`#carrinho`, 1 por volante): o preenchimento só
   segue quando o contador sobe; se não subir em 8 s, para com erro na linha. Motivo: num teste de 100 o contador mostrou
   99 e o critério anterior (volante limpo) não pegava item perdido; depois da mudança, 100 de 100 e 50 de 50.
+- **Volantes recusados não interrompem o lote** (24/10/2026): se o site recusa um volante (modal `#alert`, valor
+  diferente do esperado ou nenhuma reação), a extensão fecha o aviso, limpa o volante, registra `{numero, mensagem}` em
+  `recusados` e segue; o popup lista as linhas recusadas no fim, agrupadas por mensagem. Só erros inesperados (contador
+  do carrinho que não sobe, página errada) param tudo, e 5 recusas seguidas também (sinal de problema geral, ex.: sessão
+  expirada). O popup ignora de antemão os volantes sem nenhum duplo (`apostas === 1`): a Loteca exige pelo menos um.
+  O preço por aposta só é aprendido de um volante **aceito** (aprender de um recusado causou recusa de volantes válidos).
 - O script injetado vive no mundo isolado da extensão: o console da página não enxerga `window.lotecando`;
   consultar/cancelar via `chrome.scripting.executeScript` a partir de uma página da extensão. Em testes por CDP,
   abrir a aba do popup com `Target.createTarget {background: true}` (ou não, para testar aba oculta de propósito) e

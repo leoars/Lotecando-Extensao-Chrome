@@ -125,3 +125,8 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   R$ 750,00) colocado no carrinho em 35 s, contador e total do site conferidos; o Leonardo pagou e confirmou "jogo
   efetivado". O arquivo também fica em `D:\Leonardo\Lotecando\WEB\dados\arquivos` (fora deste repositório).
 - Ideias futuras: outras modalidades; empacotar para a Chrome Web Store (revisar o aviso legal e privacidade antes).
+- **Publicação na Chrome Web Store** (24/10/2026): versão 1.0.0 enviada para análise pelo Leonardo, visibilidade **Não listada**,
+  gratuita, sem revisão de advogado (decisão dele). Código do item na loja: `pmnddbobcjniddofmnnocelpbapihmfm`. O painel não é
+  controlável pela extensão Claude in Chrome (bloqueia o domínio da loja): o envio é manual. Lições: o `description` do manifest
+  tem limite de 132 caracteres; a conta exige e-mail de contato verificado e pelo menos 1 captura de tela. Se a loja recusar
+  (nome com "Caixa", permissões), alternativas de nome em `docs/loja/textos-da-loja.md`; cada reenvio exige `version` maior.

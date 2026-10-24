@@ -3,7 +3,7 @@
 Extensão do Chrome que lê os jogos da Loteca gerados pelo programa **Lotecando** (arquivo `.vol`) e os
 preenche no site de Loterias Online da Caixa, colocando cada aposta no carrinho para você conferir e pagar.
 
-> Status: versão 0.1.0, em desenvolvimento. Suporta a **Loteca** (`.vol`) e a **Mega-Sena** (`.txt`).
+> Status: versão 1.0.0. Suporta a **Loteca** (`.vol`) e a **Mega-Sena** (`.txt`).
 
 ## ⚠️ AVISO LEGAL — LEIA ANTES DE USAR
 

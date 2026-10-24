@@ -10,7 +10,7 @@ política de privacidade (`PRIVACIDADE.md`), textos da ficha (`textos-da-loja.md
    `name`, `short_name` e `action.default_title` no `manifest.json`, o título do `popup.html` e os textos da loja, e
    regerar o pacote.
 2. **Revisão jurídica** (ver `pontos-para-advogado.md`), principalmente o Termo de Uso da Caixa (cláusulas 7.4 e 10.1).
-3. **Versão.** O `manifest.json` está em `0.1.0`. Para a primeira publicação, sugiro `1.0.0`; cada novo envio exige uma versão
+3. **Versão.** O `manifest.json` está em `1.0.0` (primeira publicação); cada novo envio exige uma versão
    maior que a anterior.
 4. Rodar `npm test` e testar a extensão carregada (ver README).
 

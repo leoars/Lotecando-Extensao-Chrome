@@ -12,10 +12,12 @@ const $ = (id) => document.getElementById(id);
 let volantes = [];
 let consulta = null;
 
+// tipo: 'ok' (aviso bom), 'erro' (aviso ruim) ou '' (aviso neutro); texto vazio esconde a tarja.
 function mostraMensagem(texto, tipo = '') {
   const mensagem = $('mensagem');
   mensagem.textContent = texto;
-  mensagem.className = tipo;
+  mensagem.className = { ok: 'aviso bom', erro: 'aviso ruim' }[tipo] ?? 'aviso';
+  mensagem.hidden = texto === '';
 }
 
 async function abaAtiva() {
@@ -85,7 +87,6 @@ $('arquivo').addEventListener('change', async (evento) => {
   $('resumoTexto').textContent =
     `${volantes.length} volante(s), ${totalDeApostas(volantes)} aposta(s) no total ` +
     `(primeira linha: ${volantes[0].linha}).`;
-  $('inicio').max = String(volantes.length);
   $('inicio').value = '1';
   $('resumo').hidden = false;
 });

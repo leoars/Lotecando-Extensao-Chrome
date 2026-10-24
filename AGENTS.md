@@ -23,6 +23,12 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   - na descrição do `manifest.json` e da loja;
   - num comentário de cabeçalho em cada arquivo de código (JS/HTML) — texto curto: "Sem garantia. Uso por conta
     e risco do usuário; o autor não se responsabiliza pelos efeitos do uso. Projeto não oficial, sem vínculo com a Caixa."
+- **Layout = o do site Lotecando** (pedido do Leonardo, 24/10/2026). Fonte: `D:\Leonardo\Lotecando\WEB`
+  (`api/src/publico/padrao/base.css` e `docs/PADROES-INTERFACE.md`). `src/popup.css` copia os tokens (`--verde`,
+  `--papel`, `--superficie`, `--tinta`…) e os componentes (`.cartao`, `.campo`, `.dica`, `.btn`, `.btn-2`, `.aviso`
+  `.bom`/`.ruim`, `.progresso-arquivo`) com os mesmos nomes; tema escuro pelo `prefers-color-scheme`. Antes de criar
+  tela/componente novo, ler o guia e reutilizar o equivalente do site; padrão novo se decide com o Leonardo. Textbox
+  em `.campo` declara `type="text"` (sem `type=number`).
 - Documentação detalhada em `docs/` (ler antes de mexer):
   - `docs/formato-vol.md` — formato do arquivo `.vol` e mapeamento para o site.
   - `docs/site-caixa-loteca.md` — seletores confirmados no site da Caixa (24/10/2026) e pendências.
@@ -63,5 +69,10 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   - `src/popup.*` — aviso legal com aceite (`VERSAO_DO_AVISO`), seleção do arquivo, resumo, início, progresso, cancelar.
 - Testado no site real em 24/10/2026: 2 volantes do `Exemplo.vol` entraram no carrinho e foram removidos (injetando o
   `conteudo.js` pelo console). **O popup carregado como extensão ainda não foi testado** no Chrome.
+- Teste no Chrome: o navegador do Claude (extensão Claude in Chrome) bloqueia `chrome://`, então não instala extensões.
+  Use `node scripts/abrir-chrome-teste.mjs`: abre um Chrome **separado** (perfil fixo `.perfil-teste/`, fora do Git,
+  porta de depuração 9333) com a extensão carregada via CDP (`Extensions.loadUnpacked`) na página da Loteca. O login na
+  Caixa é feito à mão pelo Leonardo, uma vez; nunca digitar credenciais. Ao testar o preenchimento, remover do carrinho
+  o que foi colocado (lixeira `a.data-remover_aposta_carrinho_resumido`) e nunca ir ao pagamento.
 - Ideias futuras: tratar mensagens de erro do site (limites de duplos/triplos), outras modalidades, empacotar para a
   Chrome Web Store (revisar o aviso legal e privacidade antes).

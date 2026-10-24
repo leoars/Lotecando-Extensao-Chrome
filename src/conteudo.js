@@ -18,9 +18,9 @@
     carrinho: '#colocarnocarrinho',
     valor: '.valor-aposta',
     modais: '.modal',
+    contadorDoCarrinho: '#carrinho', // número de volantes no carrinho, no cabeçalho do site
   };
   const TOTAL_DE_PALPITES = 42; // 14 jogos x 3 colunas
-  const PAUSA_ENTRE_VOLANTES_MS = 400;
 
   const estado = {
     rodando: false,
@@ -31,17 +31,42 @@
     erro: null, // {numero, mensagem}
     concluido: false,
     centavosPorAposta: null,
+    itensAntes: null, // itens que já estavam no carrinho ao começar
   };
 
-  const espera = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  // O Chrome atrasa os setTimeout de abas ocultas (1 s, e bem mais depois de 5 min). Por isso as esperas aqui são
+  // guiadas por mudanças na página (MutationObserver) e por MessageChannel, que não sofrem esse atraso; o setTimeout
+  // só serve de limite de segurança.
+  const cede = () =>
+    new Promise((resolve) => {
+      const canal = new MessageChannel();
+      canal.port1.onmessage = () => {
+        canal.port1.close();
+        resolve();
+      };
+      canal.port2.postMessage(0);
+    });
 
-  async function esperaAte(condicao, limiteMs = 5000) {
-    const inicio = Date.now();
-    while (Date.now() - inicio < limiteMs) {
-      if (condicao()) return true;
-      await espera(60);
-    }
-    return condicao();
+  function esperaAte(condicao, limiteMs = 5000) {
+    return new Promise((resolve) => {
+      if (condicao()) return resolve(true);
+
+      const observador = new MutationObserver(() => {
+        if (condicao()) termina(true);
+      });
+      const limite = setTimeout(() => termina(condicao()), limiteMs);
+      let terminou = false;
+
+      function termina(resultado) {
+        if (terminou) return;
+        terminou = true;
+        observador.disconnect();
+        clearTimeout(limite);
+        resolve(resultado);
+      }
+
+      observador.observe(document.documentElement, { attributes: true, childList: true, subtree: true, characterData: true });
+    });
   }
 
   const palpites = () => [...document.querySelectorAll(SELETORES.palpites)];
@@ -60,6 +85,11 @@
 
   function modalAberto() {
     return [...document.querySelectorAll(SELETORES.modais)].find((m) => getComputedStyle(m).display !== 'none');
+  }
+
+  function itensNoCarrinho() {
+    const numero = parseInt(document.querySelector(SELETORES.contadorDoCarrinho)?.innerText, 10);
+    return Number.isNaN(numero) ? null : numero;
   }
 
   // "Valor da Aposta: R$ 4,00" -> 400
@@ -93,7 +123,11 @@
     }
 
     // Confere o valor mostrado pelo site: o primeiro volante define o preço por aposta; os demais têm de bater.
-    await espera(300);
+    if (estado.centavosPorAposta !== null) {
+      await esperaAte(() => valorEmCentavos() === estado.centavosPorAposta * volante.apostas, 3000);
+    } else {
+      for (let i = 0; i < 5; i++) await cede(); // deixa o site atualizar o valor
+    }
     const centavos = valorEmCentavos();
     if (centavos !== null) {
       if (estado.centavosPorAposta === null && centavos % volante.apostas === 0) {
@@ -119,6 +153,17 @@
     if (!resolvido) {
       throw new Error('O site não colocou a aposta no carrinho (o volante continuou marcado).');
     }
+
+    // O volante só conta como feito quando o contador do carrinho do site sobe.
+    if (estado.itensAntes !== null) {
+      const esperado = estado.itensAntes + estado.feitos + 1;
+      if (!(await esperaAte(() => itensNoCarrinho() === esperado, 8000))) {
+        throw new Error(
+          `O site não confirmou o volante: o carrinho mostra ${itensNoCarrinho() ?? 'um valor ilegível'} item(ns) ` +
+          `e eram esperados ${esperado}.`
+        );
+      }
+    }
   }
 
   async function iniciar(volantes) {
@@ -131,6 +176,7 @@
       atual: null,
       erro: null,
       concluido: false,
+      itensAntes: itensNoCarrinho(),
     });
 
     try {
@@ -140,7 +186,7 @@
         await preencheVolante(volante);
         estado.feitos++;
         estado.atual = null;
-        await espera(PAUSA_ENTRE_VOLANTES_MS);
+        await cede();
       }
       estado.concluido = !estado.cancelar;
     } catch (erro) {

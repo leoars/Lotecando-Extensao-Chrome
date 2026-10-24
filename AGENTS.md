@@ -73,12 +73,18 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   esvaziado ao fim de cada teste. Volume: 20 volantes (46 apostas) em ~19 s com a aba da Caixa visível; o contador do
   carrinho do site mostrou 20 e voltou a 0 na limpeza. Ainda não testado: erro do site (limites de duplos/triplos)
   e os 334 volantes do `Exemplo.vol` inteiro.
-- **Aba oculta = lenta** (descoberto em 24/10/2026): o laço roda na página e usa `setTimeout`; o Chrome atrasa
-  temporizadores de abas ocultas (1 s, e bem pior depois de 5 min). Um teste com a aba da Caixa atrás da aba do popup
-  fez 12 volantes em ~200 s. Por isso o popup avisa para deixar a aba visível. Em testes por CDP, abrir a aba do popup
-  com `Target.createTarget {background: true}` e manter a da Caixa em primeiro plano. O script injetado vive no mundo
-  isolado da extensão: o console da página não enxerga `window.lotecando`; consultar/cancelar via
-  `chrome.scripting.executeScript` a partir de uma página da extensão.
+- **Aba oculta** (24/10/2026): o Chrome atrasa os `setTimeout` de abas ocultas (1 s, e bem pior depois de 5 min); com
+  esperas por `setTimeout`, 12 volantes levaram ~200 s com a aba da Caixa atrás de outra. Por isso `conteudo.js` espera
+  por `MutationObserver` e `MessageChannel` (sem pausas fixas); `setTimeout` só como limite de segurança. Resultado com
+  a aba oculta: 20 volantes em ~8 s, 50 em ~26 s, 100 em ~88 s. Arquivos grandes são comuns (Leonardo), então não
+  reintroduzir esperas por tempo fixo.
+- **Cada volante é confirmado pelo contador do carrinho do site** (`#carrinho`, 1 por volante): o preenchimento só
+  segue quando o contador sobe; se não subir em 8 s, para com erro na linha. Motivo: num teste de 100 o contador mostrou
+  99 e o critério anterior (volante limpo) não pegava item perdido; depois da mudança, 100 de 100 e 50 de 50.
+- O script injetado vive no mundo isolado da extensão: o console da página não enxerga `window.lotecando`;
+  consultar/cancelar via `chrome.scripting.executeScript` a partir de uma página da extensão. Em testes por CDP,
+  abrir a aba do popup com `Target.createTarget {background: true}` (ou não, para testar aba oculta de propósito) e
+  trazer a aba da Caixa para a frente (`Target.activateTarget`) antes de esvaziar o carrinho, que é lento oculta.
 - Teste no Chrome: o navegador do Claude (extensão Claude in Chrome) bloqueia `chrome://`, então não instala extensões.
   Use `node scripts/abrir-chrome-teste.mjs`: abre um Chrome **separado** (perfil fixo `.perfil-teste/`, fora do Git,
   porta de depuração 9333) com a extensão carregada via CDP (`Extensions.loadUnpacked`) na página da Loteca. O login na

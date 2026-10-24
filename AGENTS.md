@@ -71,8 +71,8 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   com 3 linhas válidas + 1 inválida (a inválida foi avisada e ignorada), 3 volantes entraram no carrinho e a mensagem
   final apareceu; um segundo teste cancelou no meio (1 volante já no carrinho, mensagem correta). O carrinho foi
   esvaziado ao fim de cada teste. Volume: 20 volantes (46 apostas) em ~19 s com a aba da Caixa visível; o contador do
-  carrinho do site mostrou 20 e voltou a 0 na limpeza. Ainda não testado: erro do site (limites de duplos/triplos)
-  e os 334 volantes do `Exemplo.vol` inteiro.
+  carrinho do site mostrou 20 e voltou a 0 na limpeza. Os 334 volantes do `Exemplo.vol` inteiro e as recusas do site
+  (sem duplo, 14 triplos) também foram testados (ver abaixo). Ainda não testado: limites exatos de duplos/triplos.
 - **Aba oculta** (24/10/2026): o Chrome atrasa os `setTimeout` de abas ocultas (1 s, e bem pior depois de 5 min); com
   esperas por `setTimeout`, 12 volantes levaram ~200 s com a aba da Caixa atrás de outra. Por isso `conteudo.js` espera
   por `MutationObserver` e `MessageChannel` (sem pausas fixas); `setTimeout` só como limite de segurança. Resultado com

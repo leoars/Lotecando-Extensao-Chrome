@@ -114,4 +114,7 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   em `6` (1+X, acréscimo do botão) e 100 já tinham duplo próprio (jogo 9 em `4`) — ou seja, a extensão **não** precisa
   juntar jogos simples: o Lotecando já resolve isso. (Uma junção minha, em pares que diferem em um só jogo, cobria as
   mesmas 800 apostas do arquivo antigo, mas não foi a usada; ficou só em teste.)
+- **Segundo uso real (24/10/2026)**: bolão da Mega-Sena, concurso 3074, `mega-sena-3074.txt` (125 jogos de 6 dezenas,
+  R$ 750,00) colocado no carrinho em 35 s, contador e total do site conferidos; o Leonardo pagou e confirmou "jogo
+  efetivado". O arquivo também fica em `D:\Leonardo\Lotecando\WEB\dados\arquivos` (fora deste repositório).
 - Ideias futuras: outras modalidades; empacotar para a Chrome Web Store (revisar o aviso legal e privacidade antes).

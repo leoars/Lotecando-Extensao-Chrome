@@ -56,6 +56,16 @@ export function leVol(texto) {
   return { volantes, invalidas };
 }
 
+// Limites da Loteca (tabela de preços em loterias.caixa.gov.br/Paginas/Loteca.aspx, conferida no site em 24/10/2026):
+// de 2 a 864 apostas por volante, ou seja, ao menos um duplo ou triplo e no máximo 3 triplos e 5 duplos (864), 1 triplo e
+// 8 duplos (768), 6 triplos (729), 9 duplos (512) etc. Fora disso o site recusa o volante.
+export const MINIMO_DE_APOSTAS = 2;
+export const MAXIMO_DE_APOSTAS = 864;
+
+export const semDuploOuTriplo = (volante) => volante.apostas < MINIMO_DE_APOSTAS;
+export const acimaDoLimite = (volante) => volante.apostas > MAXIMO_DE_APOSTAS;
+export const foraDoLimite = (volante) => semDuploOuTriplo(volante) || acimaDoLimite(volante);
+
 export function totalDeApostas(volantes) {
   return volantes.reduce((soma, volante) => soma + volante.apostas, 0);
 }

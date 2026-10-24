@@ -2,7 +2,7 @@
 // Sem garantia. Uso por conta e risco do usuário; o autor não se responsabiliza pelos efeitos do uso.
 // Projeto não oficial, sem vínculo com a Caixa Econômica Federal. Veja o README.md e a licença MIT.
 
-import { leVol, totalDeApostas } from './vol.js';
+import { leVol, totalDeApostas, foraDoLimite, semDuploOuTriplo, acimaDoLimite, MAXIMO_DE_APOSTAS } from './vol.js';
 
 const URL_DA_LOTECA = /^https:\/\/www\.loteriasonline\.caixa\.gov\.br\/silce-web\/.*#\/loteca/;
 const VERSAO_DO_AVISO = 1; // aumentar quando o aviso legal mudar, para pedir novo aceite
@@ -11,9 +11,6 @@ const $ = (id) => document.getElementById(id);
 
 let volantes = [];
 let consulta = null;
-
-// Volante com 14 palpites simples: o site da Caixa não o aceita (exige ao menos um duplo).
-const semDuploOuTriplo = (volante) => volante.apostas === 1;
 
 // tipo: 'ok' (aviso bom), 'erro' (aviso ruim) ou '' (aviso neutro); texto vazio esconde a tarja.
 function mostraMensagem(texto, tipo = '') {
@@ -87,11 +84,14 @@ $('arquivo').addEventListener('change', async (evento) => {
     return;
   }
 
+  const aceitaveis = volantes.filter((volante) => !foraDoLimite(volante));
   const semDuplo = volantes.filter(semDuploOuTriplo).length;
+  const acima = volantes.filter(acimaDoLimite).length;
   $('resumoTexto').textContent =
-    `${volantes.length} volante(s), ${totalDeApostas(volantes)} aposta(s) no total ` +
-    `(primeira linha: ${volantes[0].linha}).` +
-    (semDuplo > 0 ? ` Ignorados por não ter nenhum duplo (a Loteca da Caixa exige pelo menos um): ${semDuplo}.` : '');
+    `${volantes.length} volante(s) no arquivo; ${aceitaveis.length} serão preenchidos, ` +
+    `${totalDeApostas(aceitaveis)} aposta(s) no total (primeira linha: ${volantes[0].linha}).` +
+    (semDuplo > 0 ? ` Ignorados por não ter nenhum duplo ou triplo (a Loteca exige ao menos um): ${semDuplo}.` : '') +
+    (acima > 0 ? ` Ignorados por passar de ${MAXIMO_DE_APOSTAS} apostas (limite da Loteca): ${acima}.` : '');
   $('inicio').value = '1';
   $('resumo').hidden = false;
 });
@@ -110,9 +110,9 @@ $('botaoIniciar').addEventListener('click', async () => {
   }
 
   const inicio = Math.min(Math.max(parseInt($('inicio').value, 10) || 1, 1), volantes.length);
-  const fila = volantes.slice(inicio - 1).filter((volante) => !semDuploOuTriplo(volante));
+  const fila = volantes.slice(inicio - 1).filter((volante) => !foraDoLimite(volante));
   if (fila.length === 0) {
-    mostraMensagem('Não há volantes para preencher a partir daí (os sem duplo são ignorados).', 'erro');
+    mostraMensagem('Não há volantes para preencher a partir daí (os fora dos limites da Loteca são ignorados).', 'erro');
     return;
   }
 

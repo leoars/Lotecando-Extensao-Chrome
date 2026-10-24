@@ -34,8 +34,8 @@ Volante `14112116444124` (1ª linha de `exemplos/Exemplo.vol`, 1 duplo = 2 apost
 
 - Contador de volantes no carrinho: `#carrinho` (`a.data-jogo-menu-carrinho`), 1 por volante, texto numérico no cabeçalho.
   Sobe quando a aposta entra de verdade; a extensão usa isso para confirmar cada volante.
-- Volante **sem nenhum duplo** (14 palpites simples, ou só triplos): o site recusa ao clicar em "Colocar no Carrinho"
-  com o modal `#alert` (`.modal.fade.in`): "É preciso palpitar em todos os jogos, e no mínimo um deles deve ser duplo,
+- Volante **fora dos limites** (14 palpites simples, ou acima de 864 apostas como 14 triplos; ver a seção seguinte): o
+  site recusa ao clicar em "Colocar no Carrinho" com o modal `#alert` (`.modal.fade.in`): "É preciso palpitar em todos os jogos, e no mínimo um deles deve ser duplo,
   para colocar sua aposta no carrinho." Botão de fechar: `.data-fechar-modal-alerta` (`data-dismiss="modal"`). O volante
   continua marcado depois do aviso; é preciso fechar o modal e clicar em `#limparvolante`.
 - Em uma ocasião, um volante todo simples não gerou modal nem entrou no carrinho (o volante só ficou marcado); não
@@ -45,9 +45,31 @@ Volante `14112116444124` (1ª linha de `exemplos/Exemplo.vol`, 1 duplo = 2 apost
   aceito) e não envia ao carrinho se divergir.
 - Preço: R$ 2,00 por aposta (duplo = 2 apostas = R$ 4,00, mínimo de uma aposta válida).
 
+## Limites de duplos e triplos (mapeados em 24/10/2026)
+
+Fonte: tabela de preços de https://loterias.caixa.gov.br/Paginas/Loteca.aspx, conferida no site de apostas lendo o
+`.valor-aposta` de 56 combinações (triplos 0 a 7, duplos 0 a 10) e testando no carrinho os casos de fronteira.
+
+**Regra: o volante precisa ter de 2 a 864 apostas** (apostas = 2^duplos × 3^triplos; preço R$ 2,00 por aposta, de R$ 4,00 a
+R$ 1.728,00). O site aceita exatamente as combinações da tabela oficial:
+
+| Triplos | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|---|
+| Duplos permitidos | 1 a 9 | 0 a 8 | 0 a 6 | 0 a 5 | 0 a 3 | 0 a 1 | 0 |
+| Maior volante (apostas) | 512 | 768 | 576 | 864 | 648 | 486 | 729 |
+
+- Máximo geral: **3 triplos e 5 duplos = 864 apostas (R$ 1.728,00)**; também permitidos 6 triplos (729) e 1 triplo com
+  8 duplos (768). Um triplo sem nenhum duplo vale (3 apostas, R$ 6,00); só **nenhum duplo nem triplo** (1 aposta) não vale.
+- Acima de 864 apostas (ex.: 3 triplos e 6 duplos = 1.728; 1 triplo e 9 duplos; 7 triplos) o site não calcula o valor:
+  `.valor-aposta` mostra o mínimo `R$ 4,00` e o carrinho recusa. A mensagem do site, "no mínimo um deles deve ser duplo",
+  aparece também nesses casos e é enganosa: o problema é o limite máximo.
+- Testado no carrinho: 1 triplo sem duplo (3 apostas, aceito), 3 triplos e 5 duplos (864, aceito, R$ 1.728,00) e
+  3 triplos e 6 duplos (1.728, recusado). Todas as combinações da tabela deram o valor esperado em `.valor-aposta`.
+- A extensão aplica a regra antes de enviar (`src/vol.js`: `MINIMO_DE_APOSTAS`, `MAXIMO_DE_APOSTAS`, `foraDoLimite`), com
+  teste automático que compara todas as combinações possíveis com a tabela; o site continua sendo a última palavra.
+
 ## Pontos a verificar ainda
 
-- Limites exatos de duplos e triplos além de "pelo menos um duplo" (só 14 triplos e 14 simples foram testados).
 - Outros modais do DOM (`.msg-confirm` "Sim/Não", `.msg-ul` "Confirmar/Cancelar", "Entendi") não foram vistos em uso.
 - Regras da Loteca (mínimo de jogos marcados, máximo de duplos/triplos) para validar o `.vol` antes de enviar.
 - Contador do carrinho e limite diário (R$ 9.300,00 exibido na página).

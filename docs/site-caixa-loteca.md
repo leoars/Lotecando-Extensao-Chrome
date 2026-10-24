@@ -20,7 +20,7 @@ Os ids `apostaEspelho` e `aumentarteimosinha` (usados pelo INJOLOCA em outras lo
 ## Teste de ponta a ponta (24/10/2026)
 
 Volante `14112116444124` (1ª linha de `exemplos/Exemplo.vol`, 1 duplo = 2 apostas):
-- Marcar os palpites por `click()` nos links `a.loteca_palpite` funciona (15 marcas, índices
+- Marcar os palpites por `click()` nos links `a.loteca_palpite` funciona (14 jogos, 15 marcas — 1 por jogo mais 1 do duplo no jogo 8; índices
   2,3,8,11,13,17,20,21,22,24,27,30,35,37,39), sem precisar de eventos extras.
 - `#colocarnocarrinho` → a aposta entra no carrinho (contador do cabeçalho 0→1, total R$ 4,00 = 2 apostas × R$ 2,00),
   **o volante é limpo sozinho** (0 marcas selecionadas depois) e **nenhum modal** aparece. Não precisa chamar

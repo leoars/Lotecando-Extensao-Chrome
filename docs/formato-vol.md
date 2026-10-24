@@ -29,8 +29,14 @@ Número de apostas do volante = produto dos multiplicadores dos 14 jogos (`Conta
 
 ## Exemplo
 
-`14112116444124` → jogo 1: col.1; jogo 2: col.2; jogo 3: col.2; jogo 4: col.X; jogo 5: col.2;
-jogo 6: col.2; jogo 7: col.1+X (duplo); jogo 8: col.1 ... (multiplicador total = 2).
+`14112116444124` (14 jogos, 15 marcas porque o jogo 8 é duplo):
+
+| Jogo | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Dígito | 1 | 4 | 1 | 1 | 2 | 1 | 1 | 6 | 4 | 4 | 4 | 1 | 2 | 4 |
+| Coluna | 2 | 1 | 2 | 2 | X | 2 | 2 | 1+X | 1 | 1 | 1 | 2 | X | 1 |
+
+Multiplicador total = 2 (um duplo) → 2 apostas.
 
 ## Mapeamento para o site da Caixa (a validar)
 

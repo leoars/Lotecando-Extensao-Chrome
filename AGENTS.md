@@ -101,5 +101,11 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   porta de depuração 9333) com a extensão carregada via CDP (`Extensions.loadUnpacked`) na página da Loteca. O login na
   Caixa é feito à mão pelo Leonardo, uma vez; nunca digitar credenciais. Ao testar o preenchimento, remover do carrinho
   o que foi colocado (lixeira `a.data-remover_aposta_carrinho_resumido`) e nunca ir ao pagamento.
-- Ideias futuras: tratar mensagens de erro do site (limites de duplos/triplos), outras modalidades, empacotar para a
+- **Primeiro uso real (24/10/2026)**: bolão do concurso 1277, 400 volantes de um duplo (800 apostas, R$ 1.600,00)
+  colocados no carrinho em 7 min 17 s, contador do site = 400; o Leonardo pagou e confirmou "registrado com sucesso".
+  O arquivo real fica em `D:\Leonardo\Lotecando\WEB\dados\arquivos\BolaoLotecando1277.vol` (dado do bolão: não copiar
+  para este repositório público). A primeira versão desse arquivo tinha 800 volantes de uma aposta (jogos simples), que a
+  Loteca online não aceita; eles se juntam sem perda em 400 volantes de um duplo (pares que diferem em um só jogo; uma
+  ordem aleatória de junção cobriu todos, a ordem fixa deixou 122 sobras) e o Leonardo corrigiu o arquivo na origem.
+- Ideias futuras: opção de juntar jogos simples em duplos/triplos dentro da extensão (como acima); tratar mensagens de erro do site (limites de duplos/triplos), outras modalidades, empacotar para a
   Chrome Web Store (revisar o aviso legal e privacidade antes).

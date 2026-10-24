@@ -83,6 +83,8 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 - **Cada volante é confirmado pelo contador do carrinho do site** (`#carrinho`, 1 por volante): o preenchimento só
   segue quando o contador sobe; se não subir em 8 s, para com erro na linha. Motivo: num teste de 100 o contador mostrou
   99 e o critério anterior (volante limpo) não pegava item perdido; depois da mudança, 100 de 100 e 50 de 50.
+- O `.vol` gerado pelo Lotecando já respeita os limites de 2 a 864 apostas (confirmado pelo Leonardo, 24/10/2026); a
+  checagem da extensão é só uma rede de proteção para arquivos editados à mão ou de outra origem.
 - **Volantes recusados não interrompem o lote** (24/10/2026): se o site recusa um volante (modal `#alert`, valor
   diferente do esperado ou nenhuma reação), a extensão fecha o aviso, limpa o volante, registra `{numero, mensagem}` em
   `recusados` e segue; o popup lista as linhas recusadas no fim, agrupadas por mensagem. Só erros inesperados (contador

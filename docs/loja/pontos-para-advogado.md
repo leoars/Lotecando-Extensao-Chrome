@@ -42,8 +42,9 @@ oficial quanto a ferramentas de preenchimento automático antes de divulgar ampl
 
 ## 2. Nome e marcas ("Caixa", "Loterias Online", "Mega-Sena", "Loteca")
 
-- O nome atual, "Lotecando – Loterias Caixa", contém a marca **Caixa**. A Chrome Web Store proíbe extensões que se passem
-  por terceiros ou sugiram endosso; "Caixa" no nome pode motivar reprovação. Alternativas sem a marca no nome:
+- O nome atual, "Lotecando para Loterias Caixa", contém a marca **Caixa**; a forma "Lotecando para…" foi escolhida para deixar
+  claro que o produto é do Lotecando e não da Caixa. A Chrome Web Store proíbe extensões que se passem
+  por terceiros ou sugiram endosso; "Caixa" no nome ainda pode motivar reprovação. Alternativas sem a marca no nome:
   "Lotecando – Apostas Online", "Lotecando para Loterias Online". Mega-Sena e Loteca são nomes das modalidades (também
   da Caixa); descrever a função ("para Loteca e Mega-Sena") na descrição costuma ser tolerado como uso descritivo, mas
   avaliar.

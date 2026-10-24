@@ -5,10 +5,11 @@ principal: português (Brasil). Os limites são os da loja.
 
 ## Nome (máx. 75 caracteres)
 
-`Lotecando – Loterias Caixa`
+`Lotecando para Loterias Caixa`
 
-> Atenção: o nome tem a marca "Caixa". A loja pode recusar nomes que sugiram ligação oficial com terceiros. Alternativa
-> mais segura, se isso acontecer: `Lotecando – Apostas Online` ou `Lotecando para Loterias Online`. Ver
+> Nome escolhido pelo Leonardo (24/10/2026): "Lotecando para Loterias Caixa" deixa claro que é o Lotecando atuando sobre as
+> loterias da Caixa, e não algo da própria Caixa. Mesmo assim o nome tem a marca "Caixa" e a loja pode recusá-lo. Alternativa
+> se isso acontecer: `Lotecando – Apostas Online` ou `Lotecando para Loterias Online`. Ver
 > `pontos-para-advogado.md`. O `manifest.json` precisa ter o mesmo nome publicado.
 
 ## Resumo (máx. 132 caracteres)
@@ -24,7 +25,7 @@ Produtividade (ou "Ferramentas"). Idioma: Português (Brasil).
 ## Descrição detalhada
 
 ```
-Lotecando – Loterias Caixa preenche, no site de Loterias Online da Caixa, os jogos que você gerou no programa Lotecando.
+Lotecando para Loterias Caixa preenche, no site de Loterias Online da Caixa, os jogos que você gerou no programa Lotecando.
 
 Escolha o arquivo do Lotecando (.vol da Loteca ou .txt da Mega-Sena), confira o resumo, e a extensão marca cada jogo no
 volante e o coloca no carrinho, um por vez. Você confere o carrinho e paga no próprio site. A extensão NUNCA faz o pagamento.

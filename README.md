@@ -1,4 +1,4 @@
-# Lotecando – Loterias Caixa (extensão do Chrome)
+# Lotecando para Loterias Caixa (extensão do Chrome)
 
 Extensão do Chrome que lê os jogos da Loteca gerados pelo programa **Lotecando** (arquivo `.vol`) e os
 preenche no site de Loterias Online da Caixa, colocando cada aposta no carrinho para você conferir e pagar.

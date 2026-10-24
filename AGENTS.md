@@ -9,7 +9,7 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 - Commits em português. O assunto começa com a tag da ferramenta: `[Claude] ` ou `[Codex] `.
   Exemplo: `[Claude] Adiciona leitura do arquivo .vol`.
 - Não commitar sem o usuário pedir. Repositório git local na branch `main`.
-- Nome da extensão: **Lotecando**; nome exibido: "Lotecando – Loterias Caixa" (não usar "Caixa" como
+- Nome da extensão: **Lotecando**; nome exibido: "Lotecando para Loterias Caixa" (escolha do Leonardo, 24/10/2026: deixa claro que é o Lotecando; não usar "Caixa" como
   se fosse extensão oficial). Repositório público no GitHub: `Lotecando-Extensao-Chrome`.
 - Licença do projeto: MIT (arquivo `LICENSE`).
 - Não copiar código do INJOLOCA (GPL-3.0): ele é só referência; a implementação é própria.

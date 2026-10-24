@@ -1,4 +1,4 @@
-# Política de Privacidade — Lotecando – Loterias Caixa
+# Política de Privacidade — Lotecando para Loterias Caixa
 
 Última atualização: 24 de outubro de 2026.
 
@@ -6,7 +6,7 @@
 
 ## O que a extensão faz
 
-A extensão **Lotecando – Loterias Caixa** lê um arquivo de jogos que você mesmo escolhe (o `.vol` da Loteca ou o `.txt`
+A extensão **Lotecando para Loterias Caixa** lê um arquivo de jogos que você mesmo escolhe (o `.vol` da Loteca ou o `.txt`
 da Mega-Sena, gerados pelo programa Lotecando) e, na página da Loteca ou da Mega-Sena do site de Loterias Online da Caixa
 (`https://www.loteriasonline.caixa.gov.br/`), marca os números e clica em "Colocar no Carrinho", um jogo por vez. Ela nunca
 vai ao pagamento: você confere o carrinho e paga por conta própria.

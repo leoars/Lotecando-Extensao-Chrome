@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Lotecando – Loterias Caixa",
+  "name": "Lotecando para Loterias Caixa",
   "short_name": "Lotecando",
   "version": "0.1.0",
   "description": "Preenche no site de Loterias Online da Caixa os jogos da Loteca (.vol) e da Mega-Sena (.txt) gerados pelo Lotecando. Projeto independente e não oficial. Sem garantia: uso por conta e risco do usuário; o autor não se responsabiliza pelos efeitos do uso.",
@@ -10,7 +10,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Lotecando – Loterias Caixa",
+    "default_title": "Lotecando para Loterias Caixa",
     "default_popup": "src/popup.html"
   },
   "permissions": ["scripting", "storage"],

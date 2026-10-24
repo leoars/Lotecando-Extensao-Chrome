@@ -6,7 +6,7 @@ política de privacidade (`PRIVACIDADE.md`), textos da ficha (`textos-da-loja.md
 
 ## Antes de enviar
 
-1. **Decidir o nome.** "Lotecando – Loterias Caixa" tem a marca Caixa; ver `pontos-para-advogado.md` (ponto 2). Se mudar, alterar
+1. **Decidir o nome.** "Lotecando para Loterias Caixa" tem a marca Caixa; ver `pontos-para-advogado.md` (ponto 2). Se mudar, alterar
    `name`, `short_name` e `action.default_title` no `manifest.json`, o título do `popup.html` e os textos da loja, e
    regerar o pacote.
 2. **Revisão jurídica** (ver `pontos-para-advogado.md`), principalmente o Termo de Uso da Caixa (cláusulas 7.4 e 10.1).

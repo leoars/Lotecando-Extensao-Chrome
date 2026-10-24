@@ -1,4 +1,4 @@
-// Lotecando – Loterias Caixa
+// Lotecando para Loterias Caixa
 // Sem garantia. Uso por conta e risco do usuário; o autor não se responsabiliza pelos efeitos do uso.
 // Projeto não oficial, sem vínculo com a Caixa Econômica Federal. Veja o README.md e a licença MIT.
 

@@ -11,6 +11,7 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 - Não commitar sem o usuário pedir. Repositório git local na branch `main`.
 - Nome da extensão: **Lotecando**; nome exibido: "Lotecando – Loterias Caixa" (não usar "Caixa" como
   se fosse extensão oficial). Repositório público no GitHub: `Lotecando-Extensao-Chrome`.
+- Licença do projeto: MIT (arquivo `LICENSE`).
 - Não copiar código do INJOLOCA (GPL-3.0): ele é só referência; a implementação é própria.
 - Código e comentários em português, no estilo simples da extensão de referência.
 - A extensão **nunca finaliza a compra/pagamento**: só preenche o volante e põe no carrinho.

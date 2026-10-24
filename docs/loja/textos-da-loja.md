@@ -107,3 +107,17 @@ repetir o aviso a cada uso.
 - Visibilidade sugerida para começar: **Não listada** (só quem tiver o link instala), depois decidir por Pública.
 - Imagens: ícone 128×128 (já em `icons/icon128.png`), capturas de tela 1280×800 em `docs/loja/capturas/` e, opcional,
   bloco promocional 440×280 (não gerado).
+
+## Instruções para o revisor (aba "Práticas de privacidade" → "Instruções de teste")
+
+O revisor não tem conta na Caixa, e a extensão só age numa conta logada. Texto sugerido (não colocar login nem senha):
+
+```
+A extensão só funciona na página https://www.loteriasonline.caixa.gov.br/silce-web/ (Loteca e Mega-Sena), com a sessão de
+um apostador da Caixa já aberta; o acesso exige conta e CPF reais, por isso não é possível fornecer um login de teste.
+O que a extensão faz: o usuário abre o popup, aceita o aviso legal, escolhe um arquivo de jogos (exemplos em
+https://github.com/leoars/Lotecando-Extensao-Chrome/tree/main/exemplos) e a extensão marca cada jogo no volante do site e o
+coloca no carrinho. Ela nunca vai à tela de pagamento e não envia dado nenhum para fora do navegador (sem chamadas de
+rede). O código-fonte é aberto (MIT) no mesmo repositório. Sem login, o popup abre e valida o arquivo escolhido (mostra o
+resumo dos jogos), mas o preenchimento só ocorre na página da Caixa.
+```

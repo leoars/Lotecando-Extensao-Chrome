@@ -105,7 +105,9 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   colocados no carrinho em 7 min 17 s, contador do site = 400; o Leonardo pagou e confirmou "registrado com sucesso".
   O arquivo real fica em `D:\Leonardo\Lotecando\WEB\dados\arquivos\BolaoLotecando1277.vol` (dado do bolão: não copiar
   para este repositório público). A primeira versão desse arquivo tinha 800 volantes de uma aposta (jogos simples), que a
-  Loteca online não aceita; eles se juntam sem perda em 400 volantes de um duplo (pares que diferem em um só jogo; uma
-  ordem aleatória de junção cobriu todos, a ordem fixa deixou 122 sobras) e o Leonardo corrigiu o arquivo na origem.
-- Ideias futuras: opção de juntar jogos simples em duplos/triplos dentro da extensão (como acima); tratar mensagens de erro do site (limites de duplos/triplos), outras modalidades, empacotar para a
-  Chrome Web Store (revisar o aviso legal e privacidade antes).
+  Loteca online não aceita. O Leonardo corrigiu o arquivo na origem com o botão **"Aposta mínima" do Lotecando**, que
+  completa o duplo mínimo escolhendo um jogo (aqui, a coluna X do jogo 9): no arquivo final, 300 volantes têm o jogo 9
+  em `6` (1+X, acréscimo do botão) e 100 já tinham duplo próprio (jogo 9 em `4`) — ou seja, a extensão **não** precisa
+  juntar jogos simples: o Lotecando já resolve isso. (Uma junção minha, em pares que diferem em um só jogo, cobria as
+  mesmas 800 apostas do arquivo antigo, mas não foi a usada; ficou só em teste.)
+- Ideias futuras: outras modalidades; empacotar para a Chrome Web Store (revisar o aviso legal e privacidade antes).

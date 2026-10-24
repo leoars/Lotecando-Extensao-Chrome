@@ -25,6 +25,7 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
     e risco do usuário; o autor não se responsabiliza pelos efeitos do uso. Projeto não oficial, sem vínculo com a Caixa."
 - Documentação detalhada em `docs/` (ler antes de mexer):
   - `docs/formato-vol.md` — formato do arquivo `.vol` e mapeamento para o site.
+  - `docs/site-caixa-loteca.md` — seletores confirmados no site da Caixa (24/10/2026) e pendências.
   - `docs/referencia-injoloca.md` — como a extensão de referência INJOLOCA funciona e o que evitar.
 
 ## Origem das informações
@@ -52,5 +53,5 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 
 - O site da Caixa muda com frequência; seletores do DOM (ids `limparvolante`, `colocarnocarrinho`,
   classe `a.loteca_palpite`) devem ficar isolados num único módulo para facilitar ajustes.
-- A ordem dos links `a.loteca_palpite` no INJOLOCA é `jogo * 3 + coluna` (coluna 0=1, 1=X, 2=2). Confirmar no site atual.
+- Ordem dos links `a.loteca_palpite` = `jogo * 3 + coluna` (0=1, 1=X, 2=2) — confirmada no site em 24/10/2026.
 - Pendente: criar a estrutura da extensão (`manifest.json`, popup, content script) — ainda não iniciada.

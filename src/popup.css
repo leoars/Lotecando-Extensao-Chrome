@@ -46,6 +46,7 @@ a { color: var(--verde-700); text-decoration: none; }
 a:hover { text-decoration: underline; }
 :focus-visible { outline: 2px solid var(--amarelo-escuro); outline-offset: 2px; border-radius: 4px; }
 [hidden] { display: none !important; }
+html { overflow-x: hidden; }
 
 /* barra de topo, como a .sessao do site */
 .topo { background: var(--verde-900); color: #D6E5DC; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
@@ -95,6 +96,10 @@ main { padding: 14px 16px 4px; display: flex; flex-direction: column; gap: 14px;
   .aviso.bom { background: #203C2C; color: #A0E3B7; border-color: #477858; }
   .aviso.ruim { background: #412421; color: #FF9C96; border-color: #A6625C; }
 }
+
+/* O Chrome limita o popup a 600 px de altura: a caixa de aceite e o botão ficam sempre à vista, no rodapé. */
+.aceite-fixo { position: sticky; bottom: 0; margin: 0 -16px -14px; padding: 10px 16px 14px; background: var(--superficie); border-top: 1px solid var(--linha); border-radius: 0 0 var(--raio) var(--raio); }
+.aceite-fixo .marcador { margin: 0 0 8px; }
 
 .marcador { display: flex; align-items: flex-start; gap: 8px; margin: 4px 0 12px; font-weight: 600; }
 .marcador input { margin-top: 4px; accent-color: var(--verde); }

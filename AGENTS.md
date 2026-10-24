@@ -31,6 +31,7 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   em `.campo` declara `type="text"` (sem `type=number`).
 - Documentação detalhada em `docs/` (ler antes de mexer):
   - `docs/formato-vol.md` — formato do arquivo `.vol` e mapeamento para o site.
+  - `docs/site-caixa-mega-sena.md` — idem para a Mega-Sena (24/10/2026).
   - `docs/site-caixa-loteca.md` — seletores confirmados no site da Caixa (24/10/2026) e pendências.
   - `docs/referencia-injoloca.md` — como a extensão de referência INJOLOCA funciona e o que evitar.
 
@@ -51,7 +52,10 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 
 ## Decisões
 
-- Escopo inicial: **Loteca** (único formato `.vol` do Lotecando 3.0).
+- Modalidades: **Loteca** (`.vol` do Lotecando 3.0) e **Mega-Sena** (`.txt`, um jogo por linha, dezenas de 2 dígitos; ver
+  `docs/site-caixa-mega-sena.md`). Uma extensão só, com um bloco por modalidade em `src/conteudo.js` (`MODALIDADES`) e
+  em `src/popup.js`; a modalidade vem da URL da aba da Caixa (`#/loteca`, `#/mega-sena`). Para incluir outra (Quina,
+  Lotofácil…): parser em `src/<modalidade>.js` + testes, entrada em `MODALIDADES` nos dois arquivos e doc do site.
 - Diferente do INJOLOCA, o usuário carrega o arquivo `.vol` direto (seletor de arquivo / arrastar),
   em vez de colar texto.
 

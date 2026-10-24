@@ -2,39 +2,68 @@
 // Sem garantia. Uso por conta e risco do usuário; o autor não se responsabiliza pelos efeitos do uso.
 // Projeto não oficial, sem vínculo com a Caixa Econômica Federal. Veja o README.md e a licença MIT.
 //
-// Script injetado na aba da Loteca do site de Loterias Online da Caixa. Preenche um volante por vez e o coloca no
-// carrinho. NUNCA vai para o pagamento: o usuário confere o carrinho e paga por conta própria.
+// Script injetado na aba da Loteca ou da Mega-Sena do site de Loterias Online da Caixa. Preenche um jogo por vez e o
+// coloca no carrinho. NUNCA vai para o pagamento: o usuário confere o carrinho e paga por conta própria.
 // O laço roda aqui (não no popup) para continuar mesmo que o popup seja fechado.
-// Seletores e comportamento do site: docs/site-caixa-loteca.md. Se a Caixa mudar a página, ajuste só SELETORES.
+// Seletores e comportamento do site: docs/site-caixa-loteca.md e docs/site-caixa-mega-sena.md. Se a Caixa mudar a
+// página, ajuste só SELETORES e MODALIDADES.
 
 (() => {
   if (window.lotecando) return;
 
   const SELETORES = {
-    palpites: 'a.loteca_palpite',
-    classeMarcado: 'loteca_palpite_selecionado',
-    classeSaindo: 'loteca_palpite_selecionado-remove',
     limpar: '#limparvolante',
     carrinho: '#colocarnocarrinho',
-    valor: '.valor-aposta',
     modais: '.modal',
-    fecharModal: '.data-fechar-modal-alerta', // botão "Fechar" do aviso do site
-    contadorDoCarrinho: '#carrinho', // número de volantes no carrinho, no cabeçalho do site
+    fecharModal: '.data-fechar-modal-alerta, #fecharModalAlerta', // botão "Fechar" do aviso do site
+    contadorDoCarrinho: '#carrinho', // número de jogos no carrinho, no cabeçalho do site
   };
-  const TOTAL_DE_PALPITES = 42; // 14 jogos x 3 colunas
   const LIMITE_DE_RECUSAS_SEGUIDAS = 5;
+
+  // Cada modalidade diz como achar o que está marcado na tela e como marcar um jogo. "marcas" vêm do popup:
+  // Loteca = índices em a.loteca_palpite (jogo * 3 + coluna); Mega-Sena = ids das dezenas ("n01"... "n60"), em ordem.
+  const MODALIDADES = {
+    loteca: {
+      nome: 'Loteca',
+      seletorDoValor: '.valor-aposta',
+      telaPronta: () => document.querySelectorAll('a.loteca_palpite').length === 42, // 14 jogos x 3 colunas
+      marcados: () =>
+        [...document.querySelectorAll('a.loteca_palpite')].flatMap((a, indice) =>
+          a.classList.contains('loteca_palpite_selecionado') && !a.classList.contains('loteca_palpite_selecionado-remove')
+            ? [indice]
+            : []
+        ),
+      marca: (jogo) => {
+        const todos = document.querySelectorAll('a.loteca_palpite');
+        jogo.marcas.forEach((indice) => todos[indice].click());
+      },
+    },
+    mega: {
+      nome: 'Mega-Sena',
+      seletorDoValor: '#valoraposta',
+      telaPronta: () => Boolean(document.getElementById('n01') && document.getElementById('n60')),
+      marcados: () =>
+        [...document.querySelectorAll('a.selected')].map((a) => a.id).filter((id) => /^n\d\d$/.test(id)).sort(),
+      // Acima de 6 dezenas o site só deixa marcar depois de aumentar a quantidade de números (uma vez por dezena extra).
+      preparar: (jogo) => {
+        for (let i = 0; i < jogo.aumentos; i++) document.getElementById('aumentarnumero')?.click();
+      },
+      marca: (jogo) => jogo.marcas.forEach((id) => document.getElementById(id)?.click()),
+    },
+  };
 
   const estado = {
     rodando: false,
     cancelar: false,
+    modalidade: null,
     total: 0,
     feitos: 0,
-    atual: null, // numero da linha do .vol em andamento
+    atual: null, // numero da linha do arquivo em andamento
     erro: null, // {numero, mensagem}
     concluido: false,
     centavosPorAposta: null,
     itensAntes: null, // itens que já estavam no carrinho ao começar
-    recusados: [], // [{numero, mensagem}] volantes que o site não aceitou
+    recusados: [], // [{numero, mensagem}] jogos que o site não aceitou
   };
 
   // O Chrome atrasa os setTimeout de abas ocultas (1 s, e bem mais depois de 5 min). Por isso as esperas aqui são
@@ -72,19 +101,7 @@
     });
   }
 
-  const palpites = () => [...document.querySelectorAll(SELETORES.palpites)];
-
-  function indicesMarcados() {
-    const marcados = [];
-    palpites().forEach((a, indice) => {
-      if (a.classList.contains(SELETORES.classeMarcado) && !a.classList.contains(SELETORES.classeSaindo)) {
-        marcados.push(indice);
-      }
-    });
-    return marcados;
-  }
-
-  const mesmosIndices = (a, b) => a.length === b.length && a.every((valor, i) => valor === b[i]);
+  const mesmosItens = (a, b) => a.length === b.length && a.every((valor, i) => valor === b[i]);
 
   function modalAberto() {
     return [...document.querySelectorAll(SELETORES.modais)].find((m) => getComputedStyle(m).display !== 'none');
@@ -107,7 +124,7 @@
     }
   }
 
-  // Volante que o site não aceita; não impede os outros.
+  // Jogo que o site não aceita; não impede os outros.
   class RecusadoPeloSite extends Error {}
 
   function itensNoCarrinho() {
@@ -118,93 +135,95 @@
   const emReais = (centavos) => `R$ ${(centavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
   // "Valor da Aposta: R$ 4,00" -> 400
-  function valorEmCentavos() {
-    const texto = document.querySelector(SELETORES.valor)?.innerText ?? '';
+  function valorEmCentavos(modalidade) {
+    const texto = document.querySelector(modalidade.seletorDoValor)?.innerText ?? '';
     const m = texto.match(/R\$\s*([\d.]+),(\d{2})/);
     return m ? Number(m[1].replace(/\./g, '')) * 100 + Number(m[2]) : null;
   }
 
-  async function limpaVolante() {
+  async function limpaVolante(modalidade) {
     document.querySelector(SELETORES.limpar)?.click();
-    if (!(await esperaAte(() => indicesMarcados().length === 0))) {
+    if (!(await esperaAte(() => modalidade.marcados().length === 0))) {
       throw new Error('Não consegui limpar o volante do site.');
     }
   }
 
-  async function preencheVolante(volante) {
-    if (palpites().length !== TOTAL_DE_PALPITES) {
-      throw new Error('Tela da Loteca não encontrada. Abra a página da Loteca no site da Caixa.');
+  async function preencheJogo(modalidade, jogo) {
+    if (!modalidade.telaPronta()) {
+      throw new Error(`Tela da ${modalidade.nome} não encontrada. Abra a página da ${modalidade.nome} no site da Caixa.`);
     }
 
-    await limpaVolante();
+    await limpaVolante(modalidade);
 
-    const todos = palpites();
-    volante.marcas.forEach((indice) => todos[indice].click());
+    modalidade.preparar?.(jogo);
+    modalidade.marca(jogo);
 
-    if (!(await esperaAte(() => mesmosIndices(indicesMarcados(), volante.marcas)))) {
-      const obtidas = indicesMarcados().length;
-      await limpaVolante();
-      throw new Error(`O volante no site ficou diferente do arquivo (${obtidas} marcas em vez de ${volante.marcas.length}).`);
+    if (!(await esperaAte(() => mesmosItens(modalidade.marcados(), jogo.marcas)))) {
+      const obtidas = modalidade.marcados().length;
+      await limpaVolante(modalidade);
+      throw new Error(`O jogo no site ficou diferente do arquivo (${obtidas} marcas em vez de ${jogo.marcas.length}).`);
     }
 
-    // Confere o valor mostrado pelo site. O preço por aposta só é aprendido de um volante que o site aceitou de fato
+    // Confere o valor mostrado pelo site. O preço por aposta só é aprendido de um jogo que o site aceitou de fato
     // (mais abaixo); até lá, quem valida é o próprio site. Depois, o valor tem de bater com o esperado.
     if (estado.centavosPorAposta !== null) {
-      await esperaAte(() => valorEmCentavos() === estado.centavosPorAposta * volante.apostas, 3000);
+      await esperaAte(() => valorEmCentavos(modalidade) === estado.centavosPorAposta * jogo.apostas, 3000);
     } else {
       for (let i = 0; i < 5; i++) await cede(); // deixa o site atualizar o valor
     }
-    const centavos = valorEmCentavos();
-    if (centavos !== null && estado.centavosPorAposta !== null && centavos !== estado.centavosPorAposta * volante.apostas) {
-      await limpaVolante();
-      // Não vai ao carrinho: o volante do site não corresponde ao do arquivo (ex.: combinação que o site não aceita).
+    const centavos = valorEmCentavos(modalidade);
+    if (centavos !== null && estado.centavosPorAposta !== null && centavos !== estado.centavosPorAposta * jogo.apostas) {
+      await limpaVolante(modalidade);
+      // Não vai ao carrinho: o jogo do site não corresponde ao do arquivo (ex.: combinação que o site não aceita).
       throw new RecusadoPeloSite(
-        `o valor no site (${emReais(centavos)}) não bate com o esperado (${emReais(estado.centavosPorAposta * volante.apostas)}, ` +
-        `${volante.apostas} aposta(s)); o site não aceita essa combinação de duplos e triplos`
+        `o valor no site (${emReais(centavos)}) não bate com o esperado (${emReais(estado.centavosPorAposta * jogo.apostas)}, ` +
+        `${jogo.apostas} aposta(s)); o site não aceita essa combinação`
       );
     }
 
     document.querySelector(SELETORES.carrinho)?.click();
 
     // O site limpa o volante sozinho quando aceita a aposta; se aparecer um modal, é uma mensagem de erro/aviso.
-    const resolvido = await esperaAte(() => indicesMarcados().length === 0 || modalAberto(), 8000);
+    const resolvido = await esperaAte(() => modalidade.marcados().length === 0 || modalAberto(), 8000);
     const modal = modalAberto();
     if (modal) {
-      // O site recusou este volante (ex.: sem nenhum duplo). Fecha o aviso, limpa e deixa o laço seguir para o próximo.
+      // O site recusou este jogo. Fecha o aviso, limpa e deixa o laço seguir para o próximo.
       const mensagem = textoDoModal(modal);
       await fechaModal(modal);
-      await limpaVolante();
+      await limpaVolante(modalidade);
       throw new RecusadoPeloSite(mensagem);
     }
     if (!resolvido) {
-      // Sem aviso e sem entrar no carrinho (acontece com volante sem nenhum duplo): limpa e segue para o próximo.
-      await limpaVolante();
-      throw new RecusadoPeloSite('o site não aceitou o volante e não deu nenhuma mensagem');
+      // Sem aviso e sem entrar no carrinho: limpa e segue para o próximo.
+      await limpaVolante(modalidade);
+      throw new RecusadoPeloSite('o site não aceitou o jogo e não deu nenhuma mensagem');
     }
 
-    // O volante só conta como feito quando o contador do carrinho do site sobe.
+    // O jogo só conta como feito quando o contador do carrinho do site sobe.
     if (estado.itensAntes !== null) {
       const esperado = estado.itensAntes + estado.feitos + 1;
       if (!(await esperaAte(() => itensNoCarrinho() === esperado, 8000))) {
         throw new Error(
-          `O site não confirmou o volante: o carrinho mostra ${itensNoCarrinho() ?? 'um valor ilegível'} item(ns) ` +
+          `O site não confirmou o jogo: o carrinho mostra ${itensNoCarrinho() ?? 'um valor ilegível'} item(ns) ` +
           `e eram esperados ${esperado}.`
         );
       }
     }
 
-    // Volante aceito: aprende o preço por aposta para conferir os próximos.
-    if (estado.centavosPorAposta === null && centavos !== null && centavos % volante.apostas === 0) {
-      estado.centavosPorAposta = centavos / volante.apostas;
+    // Jogo aceito: aprende o preço por aposta para conferir os próximos.
+    if (estado.centavosPorAposta === null && centavos !== null && centavos % jogo.apostas === 0) {
+      estado.centavosPorAposta = centavos / jogo.apostas;
     }
   }
 
-  async function iniciar(volantes) {
+  async function iniciar(jogos, nomeDaModalidade = 'loteca') {
     if (estado.rodando) return;
+    const modalidade = MODALIDADES[nomeDaModalidade];
     Object.assign(estado, {
       rodando: true,
       cancelar: false,
-      total: volantes.length,
+      modalidade: nomeDaModalidade,
+      total: jogos.length,
       feitos: 0,
       atual: null,
       erro: null,
@@ -216,18 +235,19 @@
 
     let recusasSeguidas = 0;
     try {
-      for (const volante of volantes) {
+      if (!modalidade) throw new Error(`Modalidade desconhecida: ${nomeDaModalidade}.`);
+      for (const jogo of jogos) {
         if (estado.cancelar) break;
-        estado.atual = volante.numero;
+        estado.atual = jogo.numero;
         try {
-          await preencheVolante(volante);
+          await preencheJogo(modalidade, jogo);
           estado.feitos++;
           recusasSeguidas = 0;
         } catch (erro) {
           if (!(erro instanceof RecusadoPeloSite)) throw erro;
-          estado.recusados.push({ numero: volante.numero, mensagem: erro.message });
+          estado.recusados.push({ numero: jogo.numero, mensagem: erro.message });
           if (++recusasSeguidas >= LIMITE_DE_RECUSAS_SEGUIDAS) {
-            throw new Error(`O site recusou ${recusasSeguidas} volantes seguidos; parei para você conferir a página e o arquivo.`);
+            throw new Error(`O site recusou ${recusasSeguidas} jogos seguidos; parei para você conferir a página e o arquivo.`);
           }
         }
         estado.atual = null;

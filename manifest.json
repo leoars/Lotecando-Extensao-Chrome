@@ -3,7 +3,7 @@
   "name": "Lotecando – Loterias Caixa",
   "short_name": "Lotecando",
   "version": "0.1.0",
-  "description": "Preenche no site de Loterias Online da Caixa os volantes da Loteca (.vol) gerados pelo Lotecando. Projeto independente e não oficial. Sem garantia: uso por conta e risco do usuário; o autor não se responsabiliza pelos efeitos do uso.",
+  "description": "Preenche no site de Loterias Online da Caixa os jogos da Loteca (.vol) e da Mega-Sena (.txt) gerados pelo Lotecando. Projeto independente e não oficial. Sem garantia: uso por conta e risco do usuário; o autor não se responsabiliza pelos efeitos do uso.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

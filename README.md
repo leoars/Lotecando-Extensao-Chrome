@@ -3,7 +3,7 @@
 Extensão do Chrome que lê os jogos da Loteca gerados pelo programa **Lotecando** (arquivo `.vol`) e os
 preenche no site de Loterias Online da Caixa, colocando cada aposta no carrinho para você conferir e pagar.
 
-> Status: versão 0.1.0, em desenvolvimento. Só a **Loteca** é suportada.
+> Status: versão 0.1.0, em desenvolvimento. Suporta a **Loteca** (`.vol`) e a **Mega-Sena** (`.txt`).
 
 ## ⚠️ AVISO LEGAL — LEIA ANTES DE USAR
 
@@ -33,9 +33,9 @@ que contém a isenção formal de garantia e responsabilidade.
 
 ## Como usar
 
-1. Entre na sua conta em https://www.loteriasonline.caixa.gov.br/ e abra a página da **Loteca**.
+1. Entre na sua conta em https://www.loteriasonline.caixa.gov.br/ e abra a página da **Loteca** ou da **Mega-Sena**.
 2. Clique no ícone da extensão, leia e aceite o aviso legal (só na primeira vez).
-3. Escolha o arquivo `.vol` gerado pelo Lotecando e confira o resumo (volantes e apostas).
+3. Escolha o arquivo gerado pelo Lotecando (`.vol` da Loteca ou `.txt` da Mega-Sena) e confira o resumo.
 4. Clique em **Preencher e colocar no carrinho**. A extensão marca cada volante e o coloca no carrinho; pode fechar
    o popup, o trabalho continua na página. Ela para no primeiro problema e diz em que linha do arquivo parou.
 5. **Confira o carrinho no site e pague você mesmo.**

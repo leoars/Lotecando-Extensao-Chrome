@@ -16,6 +16,13 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 - Código e comentários em português, no estilo simples da extensão de referência.
 - A extensão **nunca finaliza a compra/pagamento**: só preenche o volante e põe no carrinho.
   O usuário confere e paga manualmente.
+- **Aviso legal obrigatório** (pedido do Leonardo): o autor não tem nenhuma responsabilidade pelos efeitos do
+  uso; a responsabilidade é inteiramente de quem usa. Deve estar sempre visível:
+  - `README.md` (seção "AVISO LEGAL" no topo — não remover nem enfraquecer);
+  - no popup da extensão, de forma clara, com aceite do usuário antes do primeiro uso (guardar o aceite);
+  - na descrição do `manifest.json` e da loja;
+  - num comentário de cabeçalho em cada arquivo de código (JS/HTML) — texto curto: "Sem garantia. Uso por conta
+    e risco do usuário; o autor não se responsabiliza pelos efeitos do uso. Projeto não oficial, sem vínculo com a Caixa."
 - Documentação detalhada em `docs/` (ler antes de mexer):
   - `docs/formato-vol.md` — formato do arquivo `.vol` e mapeamento para o site.
   - `docs/referencia-injoloca.md` — como a extensão de referência INJOLOCA funciona e o que evitar.

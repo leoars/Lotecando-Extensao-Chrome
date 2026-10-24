@@ -1,0 +1,9 @@
+{
+  "name": "lotecando-extensao-chrome",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/vol.test.js"
+  }
+}

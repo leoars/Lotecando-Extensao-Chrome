@@ -54,4 +54,14 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 - O site da Caixa muda com frequência; seletores do DOM (ids `limparvolante`, `colocarnocarrinho`,
   classe `a.loteca_palpite`) devem ficar isolados num único módulo para facilitar ajustes.
 - Ordem dos links `a.loteca_palpite` = `jogo * 3 + coluna` (0=1, 1=X, 2=2) — confirmada no site em 24/10/2026.
-- Pendente: criar a estrutura da extensão (`manifest.json`, popup, content script) — ainda não iniciada.
+- Versão 0.1.0 implementada (24/10/2026). Estrutura:
+  - `manifest.json` (MV3; permissões `scripting` e `storage`; só o host do site da Caixa);
+  - `src/vol.js` — leitura/validação do `.vol` (módulo ES, com testes em `test/`; `npm test`);
+  - `src/conteudo.js` — script injetado na aba; **todos os seletores do site ficam em `SELETORES` no topo**; o laço de
+    preenchimento roda na página (sobrevive ao fechamento do popup) e expõe `window.lotecando` (`iniciar`, `cancelar`,
+    `estado`); para no primeiro erro, confere marcas e valor (preço por aposta) antes de ir ao carrinho;
+  - `src/popup.*` — aviso legal com aceite (`VERSAO_DO_AVISO`), seleção do arquivo, resumo, início, progresso, cancelar.
+- Testado no site real em 24/10/2026: 2 volantes do `Exemplo.vol` entraram no carrinho e foram removidos (injetando o
+  `conteudo.js` pelo console). **O popup carregado como extensão ainda não foi testado** no Chrome.
+- Ideias futuras: tratar mensagens de erro do site (limites de duplos/triplos), outras modalidades, empacotar para a
+  Chrome Web Store (revisar o aviso legal e privacidade antes).

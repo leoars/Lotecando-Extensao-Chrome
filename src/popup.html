@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+  Lotecando – Loterias Caixa
+  Sem garantia. Uso por conta e risco do usuário; o autor não se responsabiliza pelos efeitos do uso.
+  Projeto não oficial, sem vínculo com a Caixa Econômica Federal. Veja o README.md e a licença MIT.
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Lotecando – Loterias Caixa</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1>Lotecando <span>Loterias Caixa</span></h1>
+
+  <section id="aviso" hidden>
+    <h2>⚠️ Aviso legal</h2>
+    <p><strong>Esta extensão é fornecida "como está", sem garantia de qualquer tipo.</strong></p>
+    <ul>
+      <li>O autor <strong>não tem nenhuma responsabilidade</strong> pelos efeitos do uso: apostas preenchidas
+        incorretamente, duplicadas, omitidas ou não registradas, prejuízos financeiros, prêmios não recebidos,
+        bloqueio de conta, falhas do site ou perda de dados.</li>
+      <li>O uso é de <strong>responsabilidade inteira e exclusiva de quem o faz</strong>.</li>
+      <li><strong>Confira sempre o carrinho antes de pagar.</strong> A extensão nunca finaliza a compra.</li>
+      <li>Projeto independente e não oficial, sem vínculo com a Caixa Econômica Federal. O site pode mudar a qualquer
+        momento; verifique se a automação é compatível com os termos de uso do site.</li>
+      <li>Jogar envolve risco financeiro e é permitido apenas a maiores de 18 anos.</li>
+    </ul>
+    <label class="aceite"><input type="checkbox" id="aceito"> Li, entendi e aceito, e sou maior de 18 anos.</label>
+    <button id="botaoAceitar" disabled>Continuar</button>
+  </section>
+
+  <section id="principal" hidden>
+    <p id="pagina" class="status"></p>
+
+    <label class="campo">Arquivo .vol do Lotecando
+      <input type="file" id="arquivo" accept=".vol,.txt">
+    </label>
+
+    <div id="resumo" hidden>
+      <p id="resumoTexto"></p>
+      <p id="invalidas" class="erro" hidden></p>
+      <label class="campo">Começar no volante nº
+        <input type="number" id="inicio" min="1" value="1">
+      </label>
+      <p class="dica">Confira o resumo e a primeira linha do arquivo antes de iniciar. As apostas só vão para o
+        carrinho; você confere e paga no site.</p>
+      <button id="botaoIniciar">Preencher e colocar no carrinho</button>
+    </div>
+
+    <div id="andamento" hidden>
+      <progress id="barra" value="0" max="1"></progress>
+      <p id="andamentoTexto"></p>
+      <button id="botaoCancelar" class="secundario">Cancelar</button>
+    </div>
+
+    <p id="mensagem" role="status"></p>
+  </section>
+
+  <footer>Não oficial · Sem garantia · <a href="https://github.com/leoars/Lotecando-Extensao-Chrome" target="_blank" rel="noopener">Código e aviso legal completo</a></footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

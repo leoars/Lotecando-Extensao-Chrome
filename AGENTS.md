@@ -67,8 +67,11 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
     preenchimento roda na página (sobrevive ao fechamento do popup) e expõe `window.lotecando` (`iniciar`, `cancelar`,
     `estado`); para no primeiro erro, confere marcas e valor (preço por aposta) antes de ir ao carrinho;
   - `src/popup.*` — aviso legal com aceite (`VERSAO_DO_AVISO`), seleção do arquivo, resumo, início, progresso, cancelar.
-- Testado no site real em 24/10/2026: 2 volantes do `Exemplo.vol` entraram no carrinho e foram removidos (injetando o
-  `conteudo.js` pelo console). **O popup carregado como extensão ainda não foi testado** no Chrome.
+- Testado no site real em 24/10/2026, com a extensão carregada no Chrome de teste (popup → página da Loteca): arquivo
+  com 3 linhas válidas + 1 inválida (a inválida foi avisada e ignorada), 3 volantes entraram no carrinho e a mensagem
+  final apareceu; um segundo teste cancelou no meio (1 volante já no carrinho, mensagem correta). O carrinho foi
+  esvaziado ao fim de cada teste. Ainda não testado: erro do site (limites de duplos/triplos) e volantes em grande
+  quantidade (o `Exemplo.vol` inteiro tem 334).
 - Teste no Chrome: o navegador do Claude (extensão Claude in Chrome) bloqueia `chrome://`, então não instala extensões.
   Use `node scripts/abrir-chrome-teste.mjs`: abre um Chrome **separado** (perfil fixo `.perfil-teste/`, fora do Git,
   porta de depuração 9333) com a extensão carregada via CDP (`Extensions.loadUnpacked`) na página da Loteca. O login na

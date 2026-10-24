@@ -139,6 +139,7 @@
         estado.atual = volante.numero;
         await preencheVolante(volante);
         estado.feitos++;
+        estado.atual = null;
         await espera(PAUSA_ENTRE_VOLANTES_MS);
       }
       estado.concluido = !estado.cancelar;

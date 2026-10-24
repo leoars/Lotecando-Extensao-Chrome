@@ -70,8 +70,15 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
 - Testado no site real em 24/10/2026, com a extensão carregada no Chrome de teste (popup → página da Loteca): arquivo
   com 3 linhas válidas + 1 inválida (a inválida foi avisada e ignorada), 3 volantes entraram no carrinho e a mensagem
   final apareceu; um segundo teste cancelou no meio (1 volante já no carrinho, mensagem correta). O carrinho foi
-  esvaziado ao fim de cada teste. Ainda não testado: erro do site (limites de duplos/triplos) e volantes em grande
-  quantidade (o `Exemplo.vol` inteiro tem 334).
+  esvaziado ao fim de cada teste. Volume: 20 volantes (46 apostas) em ~19 s com a aba da Caixa visível; o contador do
+  carrinho do site mostrou 20 e voltou a 0 na limpeza. Ainda não testado: erro do site (limites de duplos/triplos)
+  e os 334 volantes do `Exemplo.vol` inteiro.
+- **Aba oculta = lenta** (descoberto em 24/10/2026): o laço roda na página e usa `setTimeout`; o Chrome atrasa
+  temporizadores de abas ocultas (1 s, e bem pior depois de 5 min). Um teste com a aba da Caixa atrás da aba do popup
+  fez 12 volantes em ~200 s. Por isso o popup avisa para deixar a aba visível. Em testes por CDP, abrir a aba do popup
+  com `Target.createTarget {background: true}` e manter a da Caixa em primeiro plano. O script injetado vive no mundo
+  isolado da extensão: o console da página não enxerga `window.lotecando`; consultar/cancelar via
+  `chrome.scripting.executeScript` a partir de uma página da extensão.
 - Teste no Chrome: o navegador do Claude (extensão Claude in Chrome) bloqueia `chrome://`, então não instala extensões.
   Use `node scripts/abrir-chrome-teste.mjs`: abre um Chrome **separado** (perfil fixo `.perfil-teste/`, fora do Git,
   porta de depuração 9333) com a extensão carregada via CDP (`Extensions.loadUnpacked`) na página da Loteca. O login na

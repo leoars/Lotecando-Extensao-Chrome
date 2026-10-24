@@ -33,6 +33,18 @@ espaço, CRLF. Ex.: `01 04 11 17 24 49`. Exemplo real: 125 jogos de 6 dezenas (`
   também (a quantidade volta a 6 depois do carrinho/limpar).
 - Limites do site: 6 a 20 dezenas por jogo; limite diário de apostas R$ 9.300,00.
 
+## Avisos (modais) do site vistos em 24/10/2026
+
+| Aviso | Quando | O que a extensão faz |
+|---|---|---|
+|  "Atenção! Concurso NNNN ainda não aberto para aposta. Tente novamente mais tarde." (Loteca depois do encerramento) | ao abrir/usar a página da modalidade fechada; as dezenas/palpites não marcam | para tudo e repassa a mensagem do site |
+|  "É preciso palpitar em todos os jogos..." | volante da Loteca fora dos limites | recusa o jogo e segue (ver ) |
+|  "Existe uma aposta idêntica à que está sendo incluída em seu carrinho. Deseja prosseguir com a inclusão?" (botões Confirmar/Cancelar:  / ) | jogo igual a um que já está no carrinho | **Cancelar** (nunca confirma sozinha), anota como recusado: "o carrinho já tem uma aposta idêntica (não repeti)" |
+
+Se um aviso do site já estiver aberto quando a extensão começa, ela para antes de mexer em qualquer coisa. Se um aviso aparecer
+depois do clique em "Colocar no Carrinho", o contador  decide se o jogo entrou (um aviso sem relação não reprova
+o jogo; o contador também evita contar duas vezes).
+
 ## Pontos a verificar ainda
 
 - Jogos de 8 a 20 dezenas no carrinho e o aviso do site para limites (combinações caras, limite diário).

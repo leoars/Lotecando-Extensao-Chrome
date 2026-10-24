@@ -6,3 +6,4 @@ node_modules/
 Thumbs.db
 .vscode/
 .perfil-teste/
+dist/

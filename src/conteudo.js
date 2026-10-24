@@ -15,7 +15,8 @@
     limpar: '#limparvolante',
     carrinho: '#colocarnocarrinho',
     modais: '.modal',
-    fecharModal: '.data-fechar-modal-alerta, #fecharModalAlerta', // botão "Fechar" do aviso do site
+    fecharModal: '.data-fechar-modal-alerta, #fecharModalAlerta, .data-fechar-modal-confirmacao, button.close', // "Fechar"
+    cancelarConfirmacao: '.data-cancelar-modal-confirmacao', // "Cancelar" das perguntas do site (ex.: aposta idêntica)
     contadorDoCarrinho: '#carrinho', // número de jogos no carrinho, no cabeçalho do site
   };
   const LIMITE_DE_RECUSAS_SEGUIDAS = 5;
@@ -107,18 +108,20 @@
     return [...document.querySelectorAll(SELETORES.modais)].find((m) => getComputedStyle(m).display !== 'none');
   }
 
-  // Mensagem do site ("× Loteria Online <texto> Fechar" -> "<texto>").
+  // Mensagem do site ("× Loteria Online <texto> Fechar" -> "<texto>"). Pergunta de aposta idêntica vira uma frase direta.
   function textoDoModal(modal) {
-    return modal.innerText
+    const texto = modal.innerText
       .replace(/\s+/g, ' ')
       .replace(/^[×x]\s*/i, '')
       .replace(/^Loterias? Online\s*/i, '')
-      .replace(/\s*Fechar$/i, '')
+      .replace(/\s*(Fechar|Confirmar Cancelar)$/i, '')
       .trim();
+    return /id[eê]ntica/i.test(texto) ? 'o carrinho já tem uma aposta idêntica (não repeti)' : texto;
   }
 
+  // Fecha o aviso. Em perguntas do site (Confirmar/Cancelar) responde Cancelar: a extensão nunca confirma por conta própria.
   async function fechaModal(modal) {
-    modal.querySelector(SELETORES.fecharModal)?.click();
+    (modal.querySelector(SELETORES.cancelarConfirmacao) ?? modal.querySelector(SELETORES.fecharModal))?.click();
     if (!(await esperaAte(() => !modalAberto(), 4000))) {
       throw new Error('Não consegui fechar o aviso do site.');
     }
@@ -160,6 +163,13 @@
 
     if (!(await esperaAte(() => mesmosItens(modalidade.marcados(), jogo.marcas)))) {
       const obtidas = modalidade.marcados().length;
+      const aviso = modalAberto();
+      if (aviso) {
+        // O site avisou algo que vale para qualquer jogo (ex.: concurso fechado ou ainda não aberto): para tudo e repassa.
+        const mensagem = textoDoModal(aviso);
+        await fechaModal(aviso);
+        throw new Error(`O site avisou: "${mensagem}"`);
+      }
       await limpaVolante(modalidade);
       throw new Error(`O jogo no site ficou diferente do arquivo (${obtidas} marcas em vez de ${jogo.marcas.length}).`);
     }
@@ -181,33 +191,37 @@
       );
     }
 
+    // O contador do carrinho é quem diz se o jogo entrou: ele precisa passar de "já confirmados" para "mais um".
+    const esperado = estado.itensAntes === null ? null : estado.itensAntes + estado.feitos + 1;
+    const entrou = () => esperado !== null && itensNoCarrinho() === esperado;
+
     document.querySelector(SELETORES.carrinho)?.click();
 
     // O site limpa o volante sozinho quando aceita a aposta; se aparecer um modal, é uma mensagem de erro/aviso.
     const resolvido = await esperaAte(() => modalidade.marcados().length === 0 || modalAberto(), 8000);
     const modal = modalAberto();
     if (modal) {
-      // O site recusou este jogo. Fecha o aviso, limpa e deixa o laço seguir para o próximo.
+      // Antes de dar o jogo por recusado, dá um instante ao contador: o aviso pode não ter relação com este jogo.
+      if (esperado !== null) await esperaAte(entrou, 1500);
       const mensagem = textoDoModal(modal);
       await fechaModal(modal);
-      await limpaVolante(modalidade);
-      throw new RecusadoPeloSite(mensagem);
-    }
-    if (!resolvido) {
+      if (!entrou()) {
+        // O site recusou este jogo. Limpa e deixa o laço seguir para o próximo.
+        await limpaVolante(modalidade);
+        throw new RecusadoPeloSite(mensagem);
+      }
+    } else if (!resolvido && !entrou()) {
       // Sem aviso e sem entrar no carrinho: limpa e segue para o próximo.
       await limpaVolante(modalidade);
       throw new RecusadoPeloSite('o site não aceitou o jogo e não deu nenhuma mensagem');
     }
 
     // O jogo só conta como feito quando o contador do carrinho do site sobe.
-    if (estado.itensAntes !== null) {
-      const esperado = estado.itensAntes + estado.feitos + 1;
-      if (!(await esperaAte(() => itensNoCarrinho() === esperado, 8000))) {
-        throw new Error(
-          `O site não confirmou o jogo: o carrinho mostra ${itensNoCarrinho() ?? 'um valor ilegível'} item(ns) ` +
-          `e eram esperados ${esperado}.`
-        );
-      }
+    if (esperado !== null && !(await esperaAte(entrou, 8000))) {
+      throw new Error(
+        `O site não confirmou o jogo: o carrinho mostra ${itensNoCarrinho() ?? 'um valor ilegível'} item(ns) ` +
+        `e eram esperados ${esperado}.`
+      );
     }
 
     // Jogo aceito: aprende o preço por aposta para conferir os próximos.
@@ -236,6 +250,11 @@
     let recusasSeguidas = 0;
     try {
       if (!modalidade) throw new Error(`Modalidade desconhecida: ${nomeDaModalidade}.`);
+
+      // Um aviso do site já aberto (ex.: concurso fechado ou ainda não aberto) atrapalha tudo: avisa antes de mexer em algo.
+      const avisoAberto = modalAberto();
+      if (avisoAberto) throw new Error(`O site está com um aviso aberto: "${textoDoModal(avisoAberto)}". Feche-o e tente de novo.`);
+
       for (const jogo of jogos) {
         if (estado.cancelar) break;
         estado.atual = jogo.numero;

@@ -31,6 +31,8 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   em `.campo` declara `type="text"` (sem `type=number`).
 - Documentação detalhada em `docs/` (ler antes de mexer):
   - `docs/formato-vol.md` — formato do arquivo `.vol` e mapeamento para o site.
+  - `docs/loja/` — publicação na Chrome Web Store: textos da ficha, passo a passo, pontos para o advogado e capturas;
+    a política de privacidade fica em `PRIVACIDADE.md` (raiz); `node scripts/empacotar.mjs` gera o .zip em `dist/`.
   - `docs/site-caixa-mega-sena.md` — idem para a Mega-Sena (24/10/2026).
   - `docs/site-caixa-loteca.md` — seletores confirmados no site da Caixa (24/10/2026) e pendências.
   - `docs/referencia-injoloca.md` — como a extensão de referência INJOLOCA funciona e o que evitar.
@@ -96,6 +98,10 @@ preenchendo o volante da Loteca e colocando cada aposta no carrinho.
   expirada). O popup ignora de antemão os volantes fora de **2 a 864 apostas** (`foraDoLimite` em `src/vol.js`; regra
   mapeada com a tabela oficial e no site, ver `docs/site-caixa-loteca.md`; 3 triplos e 5 duplos = 864 é o máximo).
   O preço por aposta só é aprendido de um volante **aceito** (aprender de um recusado causou recusa de volantes válidos).
+- **Avisos do site** (24/10/2026; ver `docs/site-caixa-mega-sena.md`): modal já aberto no início → para antes de agir; aviso ao
+  marcar (ex.: concurso fechado) → para tudo e repassa a mensagem; pergunta de aposta idêntica → responde **Cancelar** e
+  anota como recusado (a extensão nunca confirma duplicar aposta); aviso depois do carrinho → o contador `#carrinho`
+  decide se o jogo entrou. Antes dessa regra, um aviso sem relação fez um jogo contar como recusado já tendo entrado.
 - O script injetado vive no mundo isolado da extensão: o console da página não enxerga `window.lotecando`;
   consultar/cancelar via `chrome.scripting.executeScript` a partir de uma página da extensão. Em testes por CDP,
   abrir a aba do popup com `Target.createTarget {background: true}` (ou não, para testar aba oculta de propósito) e

@@ -39,7 +39,9 @@ const MODALIDADES = {
     resumo: (todos, aceitaveis, repetidas) =>
       `${todos.length} jogo(s) no arquivo, ${totalDeApostas(aceitaveis)} aposta(s) no total ` +
       `(primeira linha: ${todos[0].linha}).` +
-      (repetidas.length > 0 ? ` Atenção: ${repetidas.length} linha(s) repetida(s) (mantidas).` : ''),
+      (repetidas.length > 0
+        ? ` Atenção: ${repetidas.length} linha(s) repetida(s); se o carrinho já tiver o jogo idêntico, o site pergunta e a extensão responde Cancelar.`
+        : ''),
   },
 };
 
